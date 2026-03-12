@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eravist | ReviewS</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">Faqs</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+
+    <div class="container">
+        <div class="heading">
+            <h2>Reviews</h2>
+            <button class="btn btn-add" onclick="openModal(0,null,'add')">+ Add New review</button>
+
+        </div>
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th class='id'>ID</th>
+                    <th class='id'>Product</th>
+                    <th class='id'>Username</th>
+                    <th class='id'>Phone</th>
+                    <th class='name'>Reviews</th>
+                    <th class='id'>Stars</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="reviewTable"></tbody>
+        </table>
+    </div>
+
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add review</h2>
+                <h2>review</h2>
+            </div>
+            <form id="reviewForm">
+                <input type="hidden" id="review_id" />
+                <div class="row">
+                    <div class="field">
+                        <label>Username</label>
+                        <input type="text" id="username" placeholder="username" required />
+                    </div>
+
+                    <div class="field">
+                        <label>Phone:</label>
+                        <input type="text" id="phone" placeholder="phone" required />
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Review Text:</label>
+                    <textarea rows="3" id="review_text" placeholder="review_text" required></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="field">
+                        <label>Product ID:</label>
+                        <input type="text" id="product_id" placeholder="Produc id" required />
+
+                    </div>
+                    <div class="field">
+                        <label>Stars:</label>
+                        <input type="text" id="stars" placeholder="stars " />
+                    </div>
+                </div>
+
+
+
+                <div class="modal-footer">
+                    <button type="button" class="button btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="button btn-action" id="saveBtn">Save Review</button>
+                </div>
+        </div>
+
+
+
+        </form>
+    </div>
+    </div>
+
+
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="deleteTitle">Delete</h2>
+                <h2>Reviews</h2>
+            </div>
+            <form id="deleteForm">
+
+                <div class="field">
+                    <label>ID</label>
+                    <input type="input" id="id_Delete_Input" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="button btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="button btn-action" id="deleteBtn">Delete Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        const API_URL = "/api/reviews";
+        const idInput = document.getElementById("review_id");
+        const idDeleteInput = document.getElementById("id_Delete_Input");
+        const form = document.getElementById("reviewForm");
+        const formD = document.getElementById("deleteForm");
+
+        const product_id = document.getElementById("product_id");
+        const username = document.getElementById("username");
+        const phone = document.getElementById("phone");
+        const review_text = document.getElementById("review_text");
+        const stars = document.getElementById("stars");
+
+
+        const tableBody = document.getElementById("reviewTable");
+        const reviewModal = document.getElementById("reviewModal");
+        const deleteModal = document.getElementById("deleteModal");
+
+
+
+        /* ===================== MODAL CONTROL ===================== */
+        function openModal(id, encodedData, action) {
+            try {
+                if (action == 'add') {
+                   
+                    document.getElementById("modalTitle").innerText = "Add Review";
+
+                } else {
+                    let review = ''
+                    if (encodedData) {
+                        review = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+                    }
+                    idInput.value = id
+                    product_id.value = review.product_id
+                    username.value = review.username
+                    phone.value = review.phone
+                    review_text.value = review.review_text
+                    stars.value = review.stars
+                    document.getElementById("modalTitle").innerText = "Update Review";
+                }
+                reviewModal.style.display = "block";
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+
+        function openDeleteModal(id) {
+            if (!id) {
+
+
+                document.getElementById("deleteTitle").innerText = "No Order ID";
+
+            } else {
+                idDeleteInput.value = id
+
+                document.getElementById("deleteTitle").innerText = "Delete Order";
+
+            }
+
+
+            deleteModal.style.display = "block";
+        }
+
+        function closeModal() {
+            idInput.value = '';
+
+            reviewModal.style.display = "none";
+            deleteModal.style.display = "none";
+
+            form.reset();
+            formD.reset();
+
+        }
+
+        /* ===================== READ ALL ===================== */
+        async function fetchData() {
+
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                console.log(data)
+                tableBody.innerHTML = "";
+                data.forEach(review => {
+                    const encodedAd = btoa(unescape(encodeURIComponent(JSON.stringify(review))));
+
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td class='id'>${review.id}</td>
+                        <td class='id'>${review.product_id}</td>
+                        <td class='id'>${review.username}</td>
+                        <td class='id'>${review.phone}</td>
+                        <td class='name'>${review.review_text}</td>
+                        <td class='id'><code>${review.stars}</code></td>
+                        <td>${review.review_date}</td>
+                        <td class="actions">
+                            <button class='btn btn-edit' onclick='openModal(${review.id}, "${encodedAd}","update")'>
+                                Edit
+                            </button>
+
+                            <button  class='btn-remove' onclick='openDeleteModal(${review.id})'>
+                                delete
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Error loading categories:", err);
+            }
+        }
+
+
+
+        /* ===================== CREATE / UPDATE ===================== */
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = idInput.value;
+            const method = id ? "PUT" : "POST";
+            const url = id ? `${API_URL}/${id}` : `${API_URL}`;
+
+            const baseData = {
+                product_id: product_id.value,
+                username: username.value,
+                phone: phone.value,
+                review_text: review_text.value,
+                stars: stars.value,
+
+            };
+            console.log(baseData)
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(baseData),
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    fetchData();
+                } else {
+                    console.log("Error saving reviews");
+
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+                console.log(error);
+
+            }
+        });
+
+
+
+
+        /* ===================== CREATE / UPDATE ===================== */
+        formD.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = idDeleteInput.value;
+            const method = "DELETE";
+            const url = `${API_URL}/${id}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    fetchData();
+                } else {
+                    consol.log("Error saving category");
+
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+            }
+        });
+
+
+        window.onclick = function (event) {
+            if (event.target == reviewModal) closeModal();
+        }
+
+        fetchData();
+    </script>
+
+
+
+</body>
+
+</html>

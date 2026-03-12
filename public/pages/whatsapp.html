@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whatsapp Configouncements Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="heading">
+            <h3>Whatsapp</h3>
+            <button class="btn-add" onclick="openModal(0,null,'add')">Add New WhatsApp</button>
+
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Content</th>
+                    <th>Language</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="WhatsappiesTable"></tbody>
+        </table>
+    </div>
+
+    <div id="adModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Whatsapp</h2>
+            </div>
+            <form id="WhatsappForm" enctype="multipart/form-data">
+                <input type="hidden" id="ad_id" />
+                <div class="row">
+                    <div class="field">
+                        <label>Action:</label>
+                        <input type="text" id="action" placeholder="action" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="field">
+                        <label>Phone:</label>
+                        <input type="text" id="phone" placeholder="phone" required />
+                    </div>
+                </div>
+
+
+                <div class="row">
+
+                    <div class="field">
+                        <label>Text: en</label>
+                        <textarea type="text" id="text_en" rows="2" required></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label>Text: ar</label>
+                        <textarea type="text" id="text_ar" rows="2" required></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label>Text: fr</label>
+                        <textarea type="text" id="text_fr" rows="2" required></textarea>
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="button btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="button btn-action" id="saveBtn">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+
+
+
+
+
+        const API_URL = "/api/whatsapp";
+        const form = document.getElementById("WhatsappForm");
+        const idInput = document.getElementById("ad_id");
+        const actionInput = document.getElementById("action");
+        const phone = document.getElementById("phone");
+        const text_en = document.getElementById("text_en");
+        const text_ar = document.getElementById("text_ar");
+        const text_fr = document.getElementById("text_fr");
+        const tableBody = document.getElementById("WhatsappiesTable");
+        const adModal = document.getElementById("adModal");
+
+
+
+        /* ===================== MODAL CONTROL ===================== */
+        function openModal(id, encodedData, action) {
+            try {
+                let whatsapp = ''
+                if (encodedData) {
+                    whatsapp = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+                }
+                idInput.value = id || '';
+                actionInput.value = action
+                if (action == 'update') {
+                    document.getElementById("modalTitle").innerText = "Edit whatsapp " + whatsapp.text_en;
+                    phone.value = whatsapp.phone
+                    text_en.value = whatsapp.text_en
+                    text_ar.value = whatsapp.text_ar
+                    text_fr.value = whatsapp.text_fr
+
+                } else if (action == 'add') {
+                    document.getElementById("modalTitle").innerText = "Add whatsapp";
+
+                } else if (action == 'delete') {
+                    document.getElementById("modalTitle").innerText = "DELETE " + whatsapp.text;
+                    phone.value = whatsapp.phone
+                    text_en.value = whatsapp.text_en
+                    text_ar.value = whatsapp.text_ar
+                    text_fr.value = whatsapp.text_fr
+                }
+
+                adModal.style.display = "block";
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+        function closeModal() {
+            idInput.value = '';
+
+            adModal.style.display = "none";
+            form.reset();
+        }
+
+        /* ===================== READ ALL ===================== */
+        async function fetchData() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                tableBody.innerHTML = "";
+                data.results.forEach(wt => {
+                    const tr = document.createElement("tr");
+                    const encodedAd = btoa(unescape(encodeURIComponent(JSON.stringify(wt))));
+
+                    tr.innerHTML = `
+                        <td>${wt.id}</td>
+                        <td>${wt.phone}</td>
+                        <td>${wt.text_en}</td>
+                        <td class="actions">
+                            <button class='btn btn-edit' onclick='openModal(${wt.id}, "${encodedAd}","update")'>
+                                Edit</button>
+                                <button  class='btn btn-remove'  onclick='openModal(${wt.id}, "${encodedAd}","delete")'>
+                                Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Error loading ads:", err);
+            }
+        }
+
+
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = idInput.value;
+            let method = "POST";
+            if (actionInput.value == 'add') {
+                method = 'POST';
+            }
+            if (actionInput.value == 'update') {
+                method = 'PUT';
+            }
+            if (actionInput.value == 'delete') {
+                method = 'DELETE';
+
+            }
+            const url = id ? `${API_URL}/${id}` : API_URL;
+
+
+
+
+
+
+            const baseData = {
+                phone: phone.value,
+                text_en: text_en.value,
+                text_ar: text_ar.value,
+                text_fr: text_fr.value
+
+            };
+            console.log(baseData)
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(baseData),
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    fetchData();
+                } else {
+                    alert("Error saving Whatsapp");
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+            }
+        });
+
+        window.onclick = function (event) {
+            if (event.target == adModal) closeModal();
+        }
+
+    </script>

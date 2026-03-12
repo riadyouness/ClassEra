@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blacklist Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+    <div class="container">
+
+        <!-- Check Entry -->
+        <div>
+            <h3>Check Blacklist</h3>
+            <label for="#">Email/Phone</label>
+            <input type="text" id="check_phone_email" onchange="fetchData()" placeholder="Phone Or Email">
+            <button onclick="checkBlacklist()">Check</button>
+            <p id="checkResult"></p>
+        </div>
+
+        <!-- Blacklist Table -->
+        <div>
+            <div class="heading">
+                <button onclick="fetchData()">Refresh List</button>
+                <button class="btn-add" onclick="showModal(0,'','add')">
+                    Add to Blacklist
+                </button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Reason</th>
+                        <th>Created At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="blacklistTable">
+                </tbody>
+            </table>
+
+
+
+            <!-- ✅ Modal -->
+            <div id="deleteModal" class="modal">
+                <div class="modal-content">
+                    <div class="heading">
+                        <h1>Are you sure you want to delete this product? <br> <span id="nameDeleteModal"></span> </h1>
+                    </div>
+                    <div class="modal-buttons">
+                        <button  class="button btn-action-d" onclick="deleteBlacklist()">Yes, Delete</button>
+                        <button  class="button btn-cancel" onclick="hideModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <!-- ✅ Modal -->
+            <div id="addModal" class="modal">
+                <div class="modal-content">
+                    <div class="heading">
+                        <h1>ADD SOMEONE TO BLACK LIST</h1>
+                    </div>
+
+                    <form action="" method="post">
+                        <div class="field">
+                            <label for="phone">phone</label>
+                            <input type="text" id="phone" placeholder="Phone">
+                        </div>
+                        <div class="field">
+                            <label for="email">email</label>
+                            <input type="text" id="email" placeholder="email">
+                        </div>
+                        <div class="field">
+                            <label for="reason">reason</label>
+                            <textarea type="text" id="reason" placeholder="reason"></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="address">Address</label>
+                            <textarea type="text" id="address" placeholder="address"></textarea>
+                        </div>
+                    </form>
+                    <div class="modal-buttons">
+                        <button  class="button btn-action" onclick="addBlacklist()">Add</button>
+                        <button  class="button btn-cancel" onclick="hideModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+
+        const API_URL = '/api/blacklist';  // change to your Express server URL
+
+        
+        // Get all blacklist entries
+        async function fetchData() {
+            const search = document.getElementById('check_phone_email').value;
+            console.log(search + ' search')
+            const res = await fetch(`${API_URL}/search/` + search);
+            const data = await res.json();
+
+            const tbody = document.querySelector('#blacklistTable');
+            tbody.innerHTML = '';
+            data.forEach(data_row => {
+                const row = `
+                    <tr>
+                        <td ">${data_row.id}</td>
+                        <td >${data_row.email}</td>
+                        <td > ${data_row.phone}</td>
+                        <td > ${data_row.reason}</td>
+                        <td >${data_row.created_at}</td>
+                        <td>              
+                            <button class='btn-delete' onclick="showModal(${data_row.id}, '${data_row.email.replace(/'/g, "\\'")}','delete')"'>delete</button>
+                        </td>
+                    </tr>
+                    `
+                    ;
+                tbody.innerHTML += row;
+            });
+
+
+        }
+
+
+
+        let SelectedID = 0
+
+        // Add to blacklist
+        async function addBlacklist() {
+
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const reason = document.getElementById('reason').value;
+            const address = document.getElementById('address').value;
+
+            try {
+                console.log({ phone, email, address, reason })
+
+                const res = await fetch(`${API_URL}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, email, address, reason })
+                });
+                const data = await res.json();
+                fetchData()
+                hideModal()
+            } catch (err) {
+                console.error('Error adding to blacklist:', err);
+            }
+        }
+
+        // Delete from blacklist
+        async function deleteBlacklist() {
+            console.log(`${API_URL}/blacklist/${SelectedID}`)
+            try {
+                const res = await fetch(`${API_URL}/id/${SelectedID}`, { method: 'DELETE' });
+                const data = await res.json();
+                fetchData()
+                hideModal()
+
+            } catch (err) {
+                console.error('Error deleting blacklist entry:', err);
+            }
+        }
+
+        // Check if phone/email is blacklisted
+        async function checkBlacklist() {
+
+            const slug = document.getElementById('check_phone_email').value;
+
+            try {
+                const res = await fetch(`${API_URL}/slug/${slug}`);
+                const data = await res.json();
+                if (data) {
+                    document.getElementById('checkResult').innerText = 'Blacklisted: ID ' + data.entry.id;
+                    console.log('Blacklisted:', data.entry);
+                } else {
+                    document.getElementById('checkResult').innerText = 'Not blacklisted';
+                }
+            } catch (err) {
+                console.error('Error checking blacklist:', err);
+            }
+        }
+
+
+        function showModal(id, name, action) {
+            if (action == 'add') {
+                document.getElementById("addModal").classList.add('active');
+            }
+            if (action == 'delete') {
+                SelectedID = id;
+                document.getElementById("nameDeleteModal").innerText = name
+                document.getElementById("deleteModal").classList.add('active');
+            } else {
+                console.log('add action' + action)
+            }
+        }
+
+
+        function hideModal() {
+            SelectedID = 0;
+            ProductName = '';
+            document.getElementById("nameDeleteModal").innerText = ''
+            document.getElementById("deleteModal").classList.remove('active');
+            document.getElementById("addModal").classList.remove('active');
+
+        }
+
+    </script>

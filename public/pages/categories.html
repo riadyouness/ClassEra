@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories | Eravist</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="heading">
+            <h3>Categories</h3>
+
+            <button class="btn-add" onclick="openModal(0, null)">+ Add New Category</button>
+
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Slug</th>
+                    <th>Image</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="categoriesTable"></tbody>
+        </table>
+    </div>
+
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Category</h2>
+            </div>
+            <form id="categoryForm" enctype="multipart/form-data">
+                <input type="hidden" id="category_id" />
+
+                <div class="row">
+                    <div class="field">
+                        <label>Category Name:</label>
+                        <input type="text" id="name" placeholder="e.g. Electronics" required />
+                    </div>
+
+                    <div class="field">
+                        <label>Name Arab:</label>
+                        <input type="text" id="name_ar" placeholder="e.g. Electronics" required />
+                    </div>
+
+                    <div class="field">
+                        <label>Name French:</label>
+                        <input type="text" id="name_fr" placeholder="e.g. Electronics" required />
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="field">
+                        <label>Category Body:</label>
+                        <textarea type="text" id="content" rows="2" required></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label>Body Arab:</label>
+                        <textarea type="text" id="content_ar" rows="2" required></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label>Body French:</label>
+                        <textarea type="text" id="content_fr" rows="2" required></textarea>
+                    </div>
+                </div>
+
+
+                <div class="row">
+
+                    <div class="field">
+                        <label>Upload Image:</label>
+                        <input type="file" id="imageInput" accept="image/*" />
+                    </div>
+                    <div class="field">
+                        <input id="output">
+                    </div>
+                    <div class="field">
+                        <input type="text" id="image_path">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="button btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="button btn-action" id="saveBtn">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+
+
+
+
+
+        const API_URL = "/api/categories";
+        const form = document.getElementById("categoryForm");
+        const idInput = document.getElementById("category_id");
+        const name_en = document.getElementById("name");
+        const name_ar = document.getElementById("name_ar");
+        const name_fr = document.getElementById("name_fr");
+        const content_en = document.getElementById("content");
+        const content_ar = document.getElementById("content_ar");
+        const content_fr = document.getElementById("content_fr");
+
+        const imageInput = document.getElementById("imageInput");
+        const output = document.getElementById("output");
+        const tableBody = document.getElementById("categoriesTable");
+        const categoryModal = document.getElementById("categoryModal");
+
+
+
+        /* ===================== MODAL CONTROL ===================== */
+        function openModal(id, encodedData) {
+            try {
+
+                idInput.value = id || '';
+                if (id) {
+                    let category = ''
+                    if (encodedData) {
+                        category = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+                    }
+                    document.getElementById("modalTitle").innerText = "Edit Category";
+                    name_en.value = category.name
+                    name_fr.value = category.name_fr
+                    name_ar.value = category.name_ar
+
+                    content_en.value = category.content
+                    content_fr.value = category.content_fr
+                    content_ar.value = category.content_ar
+
+                    image_path.value = category.image
+
+                } else {
+                    document.getElementById("modalTitle").innerText = "Add Category";
+
+                }
+
+                categoryModal.style.display = "block";
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+        function closeModal() {
+            idInput.value = '';
+
+            categoryModal.style.display = "none";
+            form.reset();
+        }
+
+        /* ===================== READ ALL ===================== */
+        async function fetchData() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                tableBody.innerHTML = "";
+                data.forEach(cat => {
+                    const encodedAd = btoa(unescape(encodeURIComponent(JSON.stringify(cat))));
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${cat.id_category}</td>
+                        <td>${cat.name}</td>
+                        <td><code>${cat.slug}</code></td>
+                        <td>
+                            ${cat.image ? `<img src="${cat.image}" class="img-thumb">` : 'No Image'}
+                        </td>
+                        <td>${cat.date_category}</td>
+                        <td class="actions">
+                            <button class='btn-edit' onclick='openModal(${cat.id_category}, "${encodedAd}" )'>
+                                Edit
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Error loading categories:", err);
+            }
+        }
+
+
+        imageInput.addEventListener('change', async () => {
+            const file = imageInput.files[0];
+
+            if (!file) {
+                imageInput.src = '';
+
+                return;
+            }
+            imageInput.src = URL.createObjectURL(file);
+
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64String = reader.result; // This is your Base64 string
+                output.textContent = base64String;   // Display it
+                console.log(base64String);           // Or use it anywhere
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+        /* ===================== CREATE / UPDATE ===================== */
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = idInput.value;
+            const method = id ? "PUT" : "POST";
+            const url = id ? `${API_URL}/${id}` : API_URL;
+
+
+
+
+
+
+            const slug = name_en.value
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '') // Remove non-word chars
+                .replace(/[\s_-]+/g, '_') // Replace spaces/underscores with -
+                .replace(/^-+|-+$/g, ''); // Remove leading/trailing -
+
+
+            const baseData = {
+                name: name_en.value,
+                slug,
+                name_fr: name_fr.value,
+                name_ar: name_ar.value,
+
+                content: content_en.value,
+                content_fr: content_fr.value,
+                content_ar: content_ar.value,
+
+                image: output.textContent,
+                image_path: image_path.value
+            };
+            console.log(baseData)
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(baseData),
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    fetchData();
+                } else {
+                    alert("Error saving category");
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+            }
+        });
+
+        window.onclick = function (event) {
+            if (event.target == categoryModal) closeModal();
+        }
+
+    </script>
+</body>
+
+</html>

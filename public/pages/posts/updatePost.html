@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Update Post — Upload Image</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+
+        <form id="updatePostForm">
+            <div class="heading">
+                <h3>Update Post</h3>
+                <a href="/posts" class="link">back to posts</a>
+            </div>
+            <div class="items">
+                <div class="item">
+                    <div class="field">
+                        <label for="title">title</label>
+                        <input type="text" class="input" name="title" id="title" placeholder="Enter post title"
+                            required />
+                        <input type="text" class="input" name="title_fr" id="title_fr"
+                            placeholder="Entrez le titre en français" required />
+                        <input type="text" class="input" name="title_ar" id="title_ar"
+                            placeholder="أدخل العنوان باللغة العربية" required />
+                    </div>
+                    <div class="field">
+                        <label for="subtitle">subtitle</label>
+                        <input type="text" class="input" name="subtitle" id="subtitle" placeholder="Enter post subtitle"
+                            required />
+
+                        <input type="text" class="input" name="subtitle_fr" id="subtitle_fr"
+                            placeholder="أدخل الترجمة الفرنسية" required />
+                        <input type="text" class="input" name="subtitle_ar" id="subtitle_ar"
+                            placeholder="أدخل العنوان الفرعي باللغة العربية" required />
+                    </div>
+
+
+
+                    <div class="btns">
+                        <button id="submitBtn" class="button btn-action" type="submit">Update Post</button>
+                        <div class="" id="output"></div>
+
+                        <div id="loading" style="display:none">⏳ uploading…</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="field">
+                        <label for="content">content <small> (eng, fr, ar)</small></label>
+                        <textarea name="content" class="content" id="content" rows="2"
+                            placeholder="Write the post content..." required onclick="openModal('en')"></textarea>
+                        <textarea name="content_fr" class="content" id="content_fr"
+                            placeholder="Entrez le contenu en français" required onclick="openModal('fr')"></textarea>
+                        <textarea name="content_ar" class="content" id="content_ar" placeholder="أدخل المحتوى العربي."
+                            required onclick="openModal('ar')"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label for="content">Status </label>
+                            <input type="text" class="input" name="status" id="status" placeholder="status" required />
+                        </div>
+                        <div class="field">
+                            <label for="content">User ID </label>
+                            <input type="text" class="input" name="user_id" id="user_id" placeholder="User ID "
+                                required />
+                        </div>
+                        <div class="field">
+                            <label for="content">Image type </label>
+                            <input type="text" class="input" name="image_type" id="image_type" placeholder="Image type"
+                                required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <div class="upload-box small">
+                                <label for="image_Input">Main Photo</label>
+                                <input type="file" name="image" id="image_Input" accept="image/*" />
+                                <div class="preview-wrap" id="previewWrap">
+                                    <img id="previewImg" alt="Preview" />
+                                </div>
+                                <div class="output" id="output"></div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="slug">Slug</label>
+                            <input type="text"  class="input"  name="slug" id="slug" />
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+
+
+
+
+
+            <div id="message"></div>
+        </form>
+
+
+
+        <div class="modal" id="content_modal">
+            <div class="modal-content">
+
+                <div class="modal-heading">
+                    <h1 class="title">Content <span id="lang_content"></span></h1>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        
+                        <textarea name="" id="content_text" class="content_text" rows="30"></textarea>
+                        <div class="modal_result">
+                            <span id="length"></span>
+                            <div id="content_desc" class="content_desc"></div>
+                            <div class="content_result" id="content_result"></div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer buttons">
+
+                    <div class="button btn-cancel" id="cancel" onclick="closeModal()">cancel</div>
+                    <div class="button btn-action" id="update" onclick="UpdateContent()">update</div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+    <script>
+
+        const path = window.location.pathname;
+        const segments = path.split('/');
+        const ID = segments[segments.length - 1];
+        async function fetchData() {
+
+            const res = await fetch(`/api/posts/id/${ID}`);
+            const post = await res.json();
+
+            document.getElementById('title').value = post.title || '';
+            document.getElementById('subtitle').value = post.subtitle || '';
+            document.getElementById('content').value = post.content || '';
+
+            document.getElementById('title_ar').value = post.title_ar || '';
+            document.getElementById('subtitle_ar').value = post.subtitle_ar || '';
+            document.getElementById('content_ar').value = post.content_ar || '';
+
+            document.getElementById('title_fr').value = post.title_fr || '';
+            document.getElementById('subtitle_fr').value = post.subtitle_fr || '';
+            document.getElementById('content_fr').value = post.content_fr || '';
+
+            document.getElementById('status').value = post.status || '';
+            document.getElementById('user_id').value = post.user_id || '';
+            document.getElementById('image_type').value = post.image_type || '';
+            document.getElementById('slug').value = post.slug || '';
+
+
+        }
+    </script>
+
+    <script>
+        (function () {
+            const form = document.getElementById('updatePostForm');
+            const imageInput = document.getElementById('image_Input');
+            const previewWrap = document.getElementById('previewWrap');
+            const previewImg = document.getElementById('previewImg');
+            const previewInfo = document.getElementById('previewInfo');
+            const message = document.getElementById('message');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+
+            const output = document.getElementById('output');
+
+
+
+            let base64Image;
+            imageInput.addEventListener('change', async () => {
+                const file = imageInput.files[0];
+
+                if (!file) {
+                    previewWrap.style.display = 'none';
+                    previewImg.src = '';
+                    previewInfo.innerText = '';
+                    return;
+                }
+                previewWrap.style.display = 'flex';
+                previewImg.src = URL.createObjectURL(file);
+
+
+                const reader = new FileReader();
+
+                reader.onload = () => {
+                    const base64String = reader.result; // This is your Base64 string
+                    output.textContent = base64String;   // Display it
+                    console.log(base64String);           // Or use it anywhere
+                };
+
+                reader.readAsDataURL(file);
+
+            });
+
+            // Submit handler: build FormData and POST multipart/form-data
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('title').value;
+                const subtitle = document.getElementById('subtitle').value;
+                const content = document.getElementById('content').value;
+
+
+                const title_ar = document.getElementById('title_ar').value;
+                const subtitle_ar = document.getElementById('subtitle_ar').value;
+                const content_ar = document.getElementById('content_ar').value;
+
+
+                const title_fr = document.getElementById('title_fr').value;
+                const subtitle_fr = document.getElementById('subtitle_fr').value;
+                const content_fr = document.getElementById('content_fr').value;
+
+
+                const status = document.getElementById('status').value;
+                const user_id = document.getElementById('user_id').value;
+
+                const image_type = document.getElementById('image_type').value;
+
+                const slug = document.getElementById('slug').value
+                const output = document.getElementById('output').textContent
+
+                try {
+
+
+                    // Change URL if your API is elsewhere
+                    const res = await fetch('/api/posts/' + ID, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title,
+                            subtitle,
+                            content,
+                            title_ar,
+                            subtitle_ar,
+                            content_ar,
+                            title_fr,
+                            subtitle_fr,
+                            content_fr,
+                            image_type,
+                            status,
+                            user_id,
+                            image: output,
+                            slug
+                        })
+                    });
+                    const data = await res.json();
+                    console.log(data)
+
+                    document.getElementById('status').value=''
+
+
+                } catch (err) {
+                    showMessage('Network error: ' + err.message, 'error');
+                }
+            });
+
+            function showMessage(text, type) {
+                message.innerHTML = '<div class="msg ' + (type === 'success' ? 'success' : 'error') + '">' + escapeHtml(text) + '</div>';
+            }
+            function clearMessage() { message.innerHTML = ''; }
+            function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+        })();
+    </script>
+
+    <script>
+
+
+        const content_text = document.getElementById('content_text')
+        const content_result = document.getElementById('content_result')
+        const content_desc = document.getElementById('content_desc')
+        function openModal(lang) {
+            document.getElementById('lang_content').textContent = lang
+
+            if (lang == 'en') {
+                content_text.value = document.getElementById('content').value
+            }
+            if (lang == 'fr') {
+                content_text.value = document.getElementById('content_fr').value
+            }
+            if (lang == 'ar') {
+                content_text.value = document.getElementById('content_ar').value
+            }
+
+            document.getElementById('content_modal').classList.add('active');
+            content_result.innerHTML = "<p class='desc'>desc</p>";
+
+        }
+        function UpdateContent() {
+            console.log(document.getElementById('lang_content').textContent)
+            let lang = document.getElementById('lang_content').textContent
+            if (lang == 'en') {
+                document.getElementById('content').value = content_result.innerHTML
+                closeModal()
+            }
+            if (lang == 'fr') {
+                document.getElementById('content_fr').value = content_result.innerHTML
+                closeModal()
+            }
+            if (lang == 'ar') {
+                document.getElementById('content_ar').value = content_result.innerHTML
+                closeModal()
+            }
+        }
+        function closeModal() {
+            document.getElementById('content_modal').classList.remove('active');
+        }
+
+        content_text.addEventListener('click', (e) => {
+
+            try {
+                content_result.innerHTML = e.target.value;
+                const descElement = content_result.querySelector('.desc');
+                content_desc.textContent = descElement.textContent;
+                document.getElementById('length').textContent = content_desc.textContent.length;
+                console.log(content_desc.textContent.length)
+                if (content_desc.textContent.length > 130 && content_desc.textContent.length < 150) {
+                    content_desc.classList.add('active')
+                } else {
+                    content_desc.classList.remove('active')
+                }
+            } catch (error) {
+                console.log('eror:', error)
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>

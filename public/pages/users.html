@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Users</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+    <div class="container">
+
+        <div class="heading">
+            <h3>Users List</h3>
+            <div class="row" style="width:300px">
+                <button class="'btn btn-add" onclick="openCreate()">Create User</button>
+                <button class="btn btn-add" onclick="ExportMyData()">Export My Data</button>
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+        <table id="checkoutTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Manage</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+
+    <!-- MODAL -->
+    <div id="showModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3 id="titleModal"></h3>
+                <input type="hidden" id="user_id">
+            </div>
+
+            <form id="form">
+
+
+                <div class="row">
+                    <div class="field">
+                        <label>Name</label>
+                        <input type="text" id="fullname">
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" id="email">
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="field">
+                        <label>Password</label>
+                        <input type="password" id="password">
+                    </div>
+                    <div class="field">
+                        <label>Role</label>
+                        <input type="text" id="role">
+                    </div>
+                </div>
+
+                <br>
+                <div class="modal-footer">
+                    <div class="modal-buttons">
+                        <button class="button btn-action" type="submit">Save</button>
+                        <button class="button btn-cancel" type="reset" onclick="hideModal()">Cancel</button>
+                    </div>
+                </div>
+
+
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+
+
+
+        /* ===================== FETCH USERS ===================== */
+        async function fetchData() {
+            let url = "/auth/users";
+
+            const res = await fetch(url, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+            const data = await res.json();
+
+            const tbody = document.querySelector("#checkoutTable tbody");
+            tbody.innerHTML = "";
+
+            data.forEach(user => {
+                const encodedAd = btoa(unescape(encodeURIComponent(JSON.stringify(user))));
+                console.log(user)
+                tbody.innerHTML += `
+      <tr>
+        <td>${user.id}</td>
+        <td>${user.fullname}</td>
+        <td>${user.email}</td>
+        <td>${user.role}</td>
+        <td>
+          <button class="btn-remove" onclick="openDelete(${user.id})">
+            delete
+          </button>
+          <button class="btn-edit" onclick='openEdit("${encodedAd}")'>
+            edit
+          </button>
+        </td>
+      </tr>
+    `;
+            });
+        }
+
+
+        /* ===================== MODAL ===================== */
+        const modal = document.getElementById("showModal");
+        const form = document.getElementById("form");
+        const titleModal = document.getElementById("titleModal");
+        const name = document.getElementById("name");
+        const email = document.getElementById("email");
+        const role = document.getElementById("role");
+        const password = document.getElementById("password");
+
+        let currentAction = "";
+
+        function openEdit(encodedData) {
+            try {
+                let user = ''
+                if (encodedData) {
+                    user = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+                }
+                currentAction = "UPDATE";
+                titleModal.textContent = 'Update User #' + user.id + ' "' + user.name;
+                modal.classList.add("active");
+
+                user_id.value = user.id;
+                fullname.value = user.fullname;
+                email.value = user.email;
+                role.value = user.role;
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+        function openDelete(id) {
+            currentAction = "DELETE";
+            titleModal.textContent = "Delete User #" + id;
+            modal.classList.add("active");
+
+            user_id.value = id;
+        }
+
+        function openCreate() {
+            currentAction = "POST";
+            titleModal.textContent = "ADD NEW USER ";
+            modal.classList.add("active");
+
+        }
+
+        function hideModal() {
+            modal.classList.remove("active");
+            form.reset();
+            currentAction = "";
+        }
+
+        /* ===================== SUBMIT ===================== */
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try {
+                const id = user_id.value;
+
+                if (currentAction === "DELETE") {
+                    await fetch(`/auth/users/${id}`, {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                    });
+                    hideModal();
+                    fetchData();
+                    return;
+                }
+
+
+                if (currentAction === "UPDATE") {
+                    const payload = {
+                        fullname: fullname.value,
+                        email: email.value,
+                        password: password.value,
+                        role: role.value
+                    };
+                    await fetch(`/auth/users/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    hideModal();
+                    fetchData();
+                }
+
+                if (currentAction === "POST") {
+                    const payload = {
+                        fullname: fullname.value,
+                        email: email.value,
+                        password: password.value,
+                        role: role.value
+                    };
+
+                    await fetch(`/auth/users/`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+
+
+                    hideModal();
+                    fetchData();
+                }
+
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        });
+    </script>
+
+<script>
+    async function ExportMyData() {
+        try {
+            const response = await fetch('auth/export', {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error('Error exporting file');
+            }
+    
+            // تحويل الاستجابة إلى Blob
+            const blob = await response.blob();
+    
+            // إنشاء رابط تحميل مؤقت
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'backup.sql'; // اسم الملف عند التحميل
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url); // تنظيف الرابط المؤقت
+    
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    </script>
+    
+
+</body>
+
+</html>

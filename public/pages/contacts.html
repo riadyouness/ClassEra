@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/contacts" class="link">contacts </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="heading">
+            <h3>Contact</h3>
+
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="contactsTable"></tbody>
+        </table>
+    </div>
+
+    <div id="adModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Contact</h2>
+            </div>
+            <form id="contactForm" enctype="multipart/form-data">
+                <input type="hidden" id="contact_id" />
+               
+                <div class="modal-footer">
+
+                    <div class="buttons">
+                        <button type="button" class="button btn-cancel" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="button btn-action" id="saveBtn">Submit</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+
+
+
+
+
+        const API_URL = "/api/contacts";
+        const form = document.getElementById("contactForm");
+        const idInput = document.getElementById("contact_id");
+        const actionInput = document.getElementById("action");
+        const tableBody = document.getElementById("contactsTable");
+        const adModal = document.getElementById("adModal");
+
+
+        /* ===================== MODAL CONTROL ===================== */
+        function openModal(id) {
+            try {
+                let ad = ''
+                idInput.value = id
+                document.getElementById("modalTitle").innerText = "DELETE AD " + id;
+
+
+                adModal.style.display = "block";
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+        function closeModal() {
+            idInput.value = '';
+
+            adModal.style.display = "none";
+            form.reset();
+        }
+
+        /* ===================== READ ALL ===================== */
+        async function fetchData() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                console.log(data)
+
+                tableBody.innerHTML = "";
+                data.forEach(contact => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${contact.id}</td>
+                        <td>${contact.firstName} ${contact.lastName}</td>
+                        <td>${contact.phone}</td>
+                        <td>${contact.email}</td>
+                        <td>${contact.subject}</td>
+                        <td>${contact.message}</td>
+
+                        <td class="actions">
+                        
+                            <button  class='btn btn-remove'  onclick='openModal(${contact.id})'>
+                                Delete
+                            </button>
+
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Error loading ads:", err);
+            }
+        }
+
+
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = idInput.value;
+            let method = 'DELETE';
+            const url = id ? `${API_URL}/${id}` : API_URL;
+            console.log(url)
+
+            try {
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    fetchData();
+                } else {
+                    alert("Error saving contacts");
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+            }
+
+        });
+
+        window.onclick = function (event) {
+            if (event.target == adModal) closeModal();
+        }
+
+    </script>

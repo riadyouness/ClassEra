@@ -1,0 +1,398 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+
+
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+    font-family: 'roboto', sans-serif;
+    text-decoration: none;
+}
+
+body {
+    background: linear-gradient(to right, #e4e5e4, #f2f4f4);
+    font-family: 'Roboto', sans-serif;
+}
+
+section {
+    margin: 50px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.heading {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0rem;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 54px;
+    background-color: rgb(9, 9, 9);
+
+    padding: 0 0rem;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1rem;
+}
+
+.header .navigation {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    overflow: hidden;
+}
+
+.header .navigation.right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    width: fit-content;
+    overflow: hidden;
+}
+
+.header .logo {
+    font-weight: 800;
+    color: #fff;
+}
+
+.header .box-search {
+    margin: 0 1rem;
+    display: flex;
+    align-items: center;
+    padding: 3px 10px;
+    height: 28px;
+    background-color: #111;
+    border: 1px solid #aaaa;
+    border-radius: 2rem;
+}
+
+.header .box-search input {
+    background-color: transparent;
+    border: 1px solid transparent;
+    outline: none;
+    font-size: 13px;
+    line-height: 13px;
+    padding: 6px 6px;
+    color: #fff;
+    font-weight: 500;
+}
+
+.header .box-search i {
+    font-size: 15px;
+    transform: translateY(3px);
+    color: #fffa;
+    padding-right: 0.3rem;
+}
+
+.header .navigation .link {
+    display: flex;
+    gap: 1rem;
+    font-size: 14px;
+    line-height: 14px;
+    text-decoration: none;
+    color: #fff;
+    padding: 6px 6px;
+    position: relative;
+}
+
+.header .navigation .link-btn {
+    display: flex;
+    gap: 1rem;
+    font-size: 12px;
+    line-height: 12px;
+    text-decoration: none;
+    color: #fff;
+    padding: 6px 12px;
+    position: relative;
+    border: 1px solid #aaa7;
+    cursor: pointer;
+    transition: all 1s;
+}
+.header .navigation .link-btn:hover {
+    background-color: #444;
+    border-color: #444;
+}
+.header .navigation .link span {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 600;
+    top: -3px;
+    right: -4px;
+}
+
+.header .btn-logout {
+    background-color: transparent;
+    border: 2px solid transparent;
+    cursor: pointer;
+    color: #fff;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+table {
+    margin: 1rem 0rem;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    background: linear-gradient(to right, #f2f4f3, #fafafa);
+    position: relative;
+}
+
+.tbl-header {
+    position: fixed;
+}
+
+
+th {
+    padding: 20px 15px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 12px;
+    color: #fff;
+    background-color: #485963;
+    border: none;
+    transform: scale(1.06);
+    text-transform: capitalize;
+}
+
+tr {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    align-items: center;
+}
+
+th {
+    grid-column: span 2;
+
+}
+
+th.id {
+    grid-column: span 1;
+}
+
+td {
+    grid-column: span 2;
+    padding: 8px 15px !important;
+    min-height: 90px;
+    text-align: left;
+    vertical-align: middle;
+    font-weight: 300;
+    font-size: 12px;
+    color: #000;
+    border-bottom: solid 1px rgba(50, 49, 49, 0.1);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+td.id {
+    grid-column: span 1;
+}
+
+.td-name {
+    grid-column: span 3;
+    font-weight: 600;
+    position: relative;
+    color: #000;
+}
+
+.td-name span {
+    position: absolute;
+    top: 11px;
+    font-size: 12px;
+    font-weight: 300;
+    display: none;
+}
+
+.td-name:hover span {
+    display: block;
+}
+
+td .img {
+    width: 70px;
+    height: 60px;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+}
+
+td img {
+    width: fit-content;
+    height: 60px;
+    object-fit: cover;
+}
+
+.td-id {
+    grid-column: span 1;
+    font-weight: 500;
+}
+
+td.date {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+td.date strong {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+td h3 {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 0 0.5rem;
+    padding-left: 0.25rem;
+}
+td.actions{
+    grid-column: span 2;
+    padding: 0 !important;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+td .btn-delete,
+td .btn-remove {
+    width: 100px;
+    height: 40px;
+    color: #fff;
+    border-radius: 1px;
+    border: 1px solid #0001;
+    font-size: 12px;
+    line-height: 12px;
+    font-weight: 400;
+    padding: 4px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 1s;
+    background-color: #f00a0a;
+    text-transform: capitalize;
+    margin-right: 1rem;
+}
+
+td .btn-remove:hover {
+    background-color: rgb(107, 13, 13) !important;
+
+}
+
+td .btn-edit {
+    width: 100px;
+    height: 40px;
+    background-color: rgb(4, 65, 109) !important;
+    color: #fff;
+    border-radius: 1px;
+    border: 1px solid #0001;
+    font-size: 12px;
+    line-height: 12px;
+    font-weight: 400;
+    padding: 10px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 1s;
+    text-transform: capitalize;
+}
+
+
+.btn-add {
+    background-color: rgb(50, 133, 59) !important;
+    border-radius: 1px;
+    border: 1px solid #0001;
+    color: #fff;
+    padding: 14px 24px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 1s;
+}
+
+.btn-add:hover {
+    background-color: rgb(9, 168, 28) !important;
+
+}
+
+/* demo styles */
+
+
+
+
+/* follow me template */
+.made-with-love {
+    margin-top: 40px;
+    padding: 10px;
+    clear: left;
+    text-align: center;
+    font-size: 10px;
+    font-family: arial;
+    color: #fff;
+}
+
+.made-with-love i {
+    font-style: normal;
+    color: #F50057;
+    font-size: 14px;
+    position: relative;
+    top: 2px;
+}
+
+.made-with-love a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.made-with-love a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+.modal {
+    position: absolute;
+    top: 0;
+    left: 100vw;
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+}

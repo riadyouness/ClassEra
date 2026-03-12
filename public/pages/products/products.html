@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products Table</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+
+    <div class="container">
+        <div class="heading">
+            <h2>Product List</h2>
+            <a href="/products/create" class="button btn-add">Add New Product</a>
+
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="td-id">ID</th>
+                    <th class='td-id'>Image</th>
+                    <th class='td-name'>Name</th>
+                    <th class="td-id">Stock/ Sold</th>
+                    <th class="td-id">Price</th>
+                    <th class="td-id">Color / Size</th>
+                    <th class="">Date && Status</th>
+                    <th>Outils</th>
+
+                </tr>
+            </thead>
+            <tbody class="tbl-content" id="tableBody">
+            </tbody>
+        </table>
+
+
+
+    </div>
+
+
+    <!-- ✅ Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+
+            <div class="modal-heading">
+                <h1 class="title">Delete Product</h1>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this product? <span id="nameDeleteModal"></span> </p>
+              
+            </div>
+        
+            <div class="modal-buttons">
+                <button class="button btn-action" onclick="deleteProduct()">Yes, Delete</button>
+                <button class="button btn-cancel" onclick="hideModal()">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+
+
+        async function fetchData(query = "") {
+            const res = await fetch(`/api/products?q=${query}`);
+            const data = await res.json();
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = data
+                .map(
+                    (p) =>  `
+                                <tr>
+                                    <td class='td-id'>${p.id}</td>
+                                    <td class="td-id"><div class="img"><img src="${p.image}"</div> </td>
+                                    <td class='td-name'>${p.name} </br> <span>${p.slug}</span></td>
+                                    <td class="td-id"> <h3> ${p.stock - p.sold} </h3>  <small>(${p.stock} - ${p.sold} )</small></td>
+                                    <td class="td-id">${p.price}</td>
+                                    <td class="td-id">${p.color} (${p.size}L)</td>
+                                    <td class="date">${p.datecreate.slice(0, 19).replace('T', ' ')}  <h5 class="strong">  ${p.status} </h5> </td>
+
+                                    <td>
+                                    <span class='btns'>
+                                        <button class='btn-remove' onclick="showDeleteModal(${p.id}, '${p.name.replace(/'/g, "\\'")}')">delete</button>
+                                        <a class='btn-edit' href='/products/update/${p.id}' >edit</a>
+                                    </span>
+                                    </td>
+                                </tr>
+                            `
+                )
+                .join("");
+        }
+
+
+
+
+
+
+        let productToDelete = 0
+        let deleteProductName = ''
+
+
+        function showDeleteModal(id, name) {
+            productToDelete = id;
+            document.getElementById("nameDeleteModal").innerText = name
+            document.getElementById("deleteModal").classList.add('active');
+        }
+
+        // ✅ Hide modal
+        function hideModal() {
+            productToDelete = 0;
+            deleteProductName = '';
+            document.getElementById("deleteModal").classList.remove('active');
+        }
+
+
+        // ✅ DELETE
+        async function deleteProduct() {
+            console.log(`/admin/products/${productToDelete}`)
+            await fetch(`/admin/products/${productToDelete}`, { method: "DELETE" });
+            fetchData();
+        }
+
+    </script>
+
+    <script>
+
+
+    </script>
+
+</body>
+
+</html>

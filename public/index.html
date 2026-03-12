@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products Table</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/home.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+
+    </header>
+    <div class="container">
+
+        <div class="web-heading">
+            <h1>Welcom To home eravist</h1>
+        </div>
+
+
+
+        <div class="lines">
+            <div class="box-line box-line-r">
+                <a href="/checkout">
+                    <h2>Orders</h2>
+                    <div class="content">
+                        <span id="orders" class="item-link">0</span> items
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="lines">
+
+
+            <div class="box-line">
+                <a href="/products">
+                    <h2>Products</h2>
+                    <div class="content">
+                        <span id="products" class="item-link">0</span> items
+                    </div>
+                </a>
+            </div>
+
+            <div class="box-line">
+                <a href="/posts">
+                    <h2>Posts</h2>
+                    <div class="content">
+                        <span id="posts" class="item-link">0</span> items
+                    </div>
+                </a>
+            </div>
+
+
+
+            <div class="box-line">
+                <a href="/categories">
+                    <h2>Categories</h2>
+                    <div class="content">
+                        <span id="categories" class="item-link">0</span> items
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+
+        <div class="lines">
+
+
+
+            <div class="box-line">
+                <a href="/blacklist">
+
+                    <h2>Blacklists</h2>
+                    <div class="content">
+                        <span id="blacklist" class="item-link">0</span> items
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="box-line">
+                <a href="/contacts">
+
+                    <h2>Contacts</h2>
+                    <div class="content">
+                        <span id="contacts" class="item-link">0</span> items
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="box-line">
+                <a href="/faq">
+                    <h2>FAQ</h2>
+                    <div class="content">
+                        <span id="faq" class="item-link">0</span> items
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+
+        <div class="lines">
+
+
+            <div class="box-line">
+                <a href="/subscriber">
+                    <h2>Subscribers</h2>
+                    <div class="content">
+                        <span id="subscribers" class="item-link">0</span> items
+                    </div>
+                </a>
+            </div>
+
+            <div class="box-line">
+                <a href="/announces">
+                    <h2>Announces</h2>
+                    <div class="content">
+                        <span id="announces" class="item-link">0</span> items
+                    </div>
+                </a>
+            </div>
+
+            <div class="box-line">
+                <a href="/reviews">
+                    <h2>Reviews</h2>
+                    <div class="content">
+                        <span id="reviews" class="item-link">0</span> items
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <script>
+
+
+
+
+
+        async function fetchData() {
+            try {
+                const [
+                    productsRes,
+                    postsRes,
+                    categoriesRes,
+                    ordersRes,
+                    blacklistRes,
+                    faqRes,
+                    subscribersRes,
+                    announcesRes,
+                    reviewsRes,
+                    contactsRes
+                ] = await Promise.all([
+                    fetch("/api/products"),
+                    fetch("/api/posts"),
+                    fetch("/api/categories"),
+                    fetch("/api/checkout"),
+                    fetch("/api/blacklist"),
+                    fetch("/api/faqs"),
+                    fetch("/api/blacklist/newsletter"),
+                    fetch("/api/announcements"),
+                    fetch("/api/reviews"),
+                    fetch("/api/contacts"),
+
+                ]);
+
+                const faq = await faqRes.json();
+                const subscribers = await subscribersRes.json();
+                const announces = await announcesRes.json();
+
+                const products = await productsRes.json();
+                const posts = await postsRes.json();
+                const categories = await categoriesRes.json();
+                const orders = await ordersRes.json();
+
+                const blacklist = await blacklistRes.json();
+                const reviews = await reviewsRes.json();
+                const contacts = await contactsRes.json();
+
+
+                document.getElementById("products").textContent = products.length;
+                document.getElementById("posts").textContent = posts.length;
+                document.getElementById("categories").textContent = categories.length;
+                document.getElementById("orders").textContent = orders.length;
+                document.getElementById("blacklist").textContent = blacklist.length;
+
+                document.getElementById("faq").textContent = faq.length;
+                document.getElementById("subscribers").textContent = subscribers.length;
+                document.getElementById("announces").textContent = announces.length;
+                document.getElementById("reviews").textContent = reviews.length;
+
+                document.getElementById("contacts").textContent = contacts.length;
+
+
+
+
+
+
+
+
+            } catch (error) {
+                console.error("Dashboard fetch error:", error);
+            }
+        }
+
+
+
+
+    </script>
+
+</body>
+
+</html>

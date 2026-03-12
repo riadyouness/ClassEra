@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eravist | Checkout</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="heading">
+            <h2>Orders and Checkout</h2>
+            <button class="btn btn-add" onclick="openModal(0,null,'add')">+ Add New Checkout</button>
+
+        </div>
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="id">ID</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="checkoutTable"></tbody>
+        </table>
+    </div>
+
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Checkout</h2> <h2>Checkout</h2>
+            </div>
+            <form id="checkoutForm">
+                <input type="hidden" id="checkout_id" />
+                <div class="row">
+                    <div class="field">
+                        <label>Customer Name:</label>
+                        <input type="text" id="fullName" placeholder="full Name" required />
+                    </div>
+
+                    <div class="field">
+                        <label>Phone:</label>
+                        <input type="text" id="phone" placeholder="phone" required />
+                    </div>
+
+
+                    <div class="field">
+                        <label>Email:</label>
+                        <input type="text" id="email" placeholder="email"  />
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="field">
+                        <label>Address</label>
+                        <input type="text" id="address" placeholder="address" required />
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="field">
+                        <label>Total</label>
+                        <input type="text" id="total" placeholder="Total" required />
+                    </div>
+                    <div class="field">
+                        <label>Status</label>
+                        <input type="text" id="status" placeholder="Status" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="row">
+                        <div class="field">
+                            <label>Items</label>
+                            <input type="text" id="items" placeholder="items" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="button btn-action" type="submit" id="saveBtn">Save Order</button>
+                    <button class="button btn-cancel" type="button" onclick="closeModal()">Cancel</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="deleteTitle">Delete</h2> <h2>Checkout</h2>
+            </div>
+            <form id="deleteForm">
+               
+                <div class="field">
+                    <label>ID</label>
+                    <input type="input" id="id_Delete_Input" />
+                </div>
+
+                <div class="modal-footer">
+                    <button class="button btn-action-d" type="submit" id="deleteBtn">Delete Order</button>
+                    <button class="button btn-cancel" type="button" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        const API_URL = "/api/checkout";
+        const idInput = document.getElementById("checkout_id");
+        const idDeleteInput = document.getElementById("id_Delete_Input");
+        const form = document.getElementById("checkoutForm");
+        const formD = document.getElementById("deleteForm");
+
+        const fullName = document.getElementById("fullName");
+        const address = document.getElementById("address");
+        const phone = document.getElementById("phone");
+        const email = document.getElementById("email");
+        const total = document.getElementById("total");
+        const status = document.getElementById("status");
+        const items = document.getElementById("items");
+
+        const tableBody = document.getElementById("checkoutTable");
+        const checkoutModal = document.getElementById("checkoutModal");
+        const deleteModal = document.getElementById("deleteModal");
+
+
+
+        /* ===================== MODAL CONTROL ===================== */
+        function openModal(id, encodedData,action) {
+            try {
+            
+            if (action=='add') {
+
+                items.value='[{"name":"Product 1","quantity":1,"price":"0.00","discount":0,"subtotal":0.00},{"name":"Product 2","quantity":1,"price":"0.0","discount":0,"subtotal":0.00}]'
+
+                document.getElementById("modalTitle").innerText = "Add Order";
+
+            }else{
+                let order = ''
+                if (encodedData) {
+                    order = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+                }
+                idInput.value=id
+                
+                fullName.value=order.customer_name
+                phone.value=order.phone
+                email.value=order.email
+
+                address.value=order.address
+                total.value=order.total
+                status.value=order.status
+                items.value=JSON.stringify(order.items)
+
+                document.getElementById("modalTitle").innerText = "Update Order";
+
+            }
+
+
+            checkoutModal.style.display = "block";
+                
+            } catch (error) {
+                
+            }
+        }
+
+
+        function openDeleteModal(id) {
+            if (!id) {
+
+
+                document.getElementById("deleteTitle").innerText = "No Order ID";
+
+            }else{
+                idDeleteInput.value=id
+                
+                document.getElementById("deleteTitle").innerText = "Delete Order";
+
+            }
+
+
+            deleteModal.style.display = "block";
+        }
+
+        function closeModal() {
+            idInput.value = '';
+
+            checkoutModal.style.display = "none";
+            deleteModal.style.display = "none";
+
+            form.reset();
+            formD.reset();
+
+        }
+
+        /* ===================== READ ALL ===================== */
+        async function loadCategories() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                console.log(data)
+                tableBody.innerHTML = "";
+                data.forEach(order => {
+                    const encodedAd = btoa(unescape(encodeURIComponent(JSON.stringify(order))));
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td class='id'>${order.order_id}</td>
+                        <td>${order.customer_name}</td>
+                        <td><code>${order.phone}</code></td>
+                        <td><code>${order.status}</code></td>
+                        <td>${order.created_at}</td>
+                        <td class="actions">
+                            <button class='btn btn-edit' onclick='openModal(${order.order_id}, "${encodedAd}", "update")'>
+                                Edit
+                            </button>
+
+                            <button  class='btn-remove' onclick='openDeleteModal(${order.order_id})'>
+                                delete
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Error loading categories:", err);
+            }
+        }
+
+
+
+        /* ===================== CREATE / UPDATE ===================== */
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = idInput.value;
+            const method = id ? "PUT" : "POST";
+            const url = id ? `${API_URL}/update-order/${id}` : `${API_URL}/new-order`;
+
+            const baseData = {
+                fullName: fullName.value,
+                phone: phone.value,
+                email: email.value,
+                address: address.value,
+
+                items: items.value,
+                total: total.value,
+                status: status.value
+
+            };
+            console.log(baseData)
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(baseData),
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    loadCategories();
+                } else {
+                    alert("Error saving category");
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+            }
+        });
+
+
+
+        
+        /* ===================== CREATE / UPDATE ===================== */
+        formD.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = idDeleteInput.value;
+            const method =  "DELETE";
+            const url = `${API_URL}/delete-order/${id}` ;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    loadCategories();
+                } else {
+                    consol.log("Error saving category");
+
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+            }
+        });
+
+
+        window.onclick = function (event) {
+            if (event.target == checkoutModal) closeModal();
+        }
+
+        loadCategories();
+    </script>
+
+
+
+</body>
+
+</html>

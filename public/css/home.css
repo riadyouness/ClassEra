@@ -1,0 +1,88 @@
+/* Heading */
+.web-heading {
+    width: 100%;
+    padding: 2rem 1rem;
+    height: 30vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.web-heading h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Grid Lines */
+.lines {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 2rem 1rem;
+}
+
+/* Dashboard Box */
+.box-line {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.box-line:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* Box Title */
+.box-line h2 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2f3238;
+    margin-bottom: 12px;
+}
+
+/* Content */
+.box-line .content {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    text-decoration: none;
+    color: #111827;
+    font-weight: 500;
+}
+
+
+/* Numbers */
+.item-link {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2563eb;
+    line-height: 1;
+}
+
+/* Hover Link */
+.box-line .content a:hover .item-link {
+    color: #1e40af;
+}
+
+.box-line-r .item-link {
+    font-size: 36px;
+    font-weight: 700;
+    color: #ac670d !important;
+    line-height: 1;
+}
+
+
+/* Responsive */
+@media (max-width: 600px) {
+    .web-heading h1 {
+        font-size: 22px;
+    }
+
+    .item-link {
+        font-size: 30px;
+    }
+}

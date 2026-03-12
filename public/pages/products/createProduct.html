@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Create Products</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create.css">
+    <script src="/js/checkToken.js"></script>
+
+</head>
+
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="navigation">
+                <div class="logo">ERAVIST</div>
+                <a href="/" class="link">Home</a>
+                <a href="/products" class="link">Products</a>
+                <a href="/users" class="link">Users</a>
+                <a href="/posts" class="link">Posts</a>
+                <a href="/categories" class="link">Categories</a>
+
+            </div>
+            <div class="navigation">
+                <a href="/checkout" class="link">Checkout</a>
+                <a href="/blacklist" class="link">Blacklist <span>07</span></a>
+                <a href="/faq" class="link">FAQ</a>
+                <a href="/subscriber" class="link">Subscribers </a>
+                <a href="/announces" class="link">Announces </a>
+                <a href="/reviews" class="link">Reviews</a>
+                <a href="/whatsapp" class="link">Whatsapp</a>
+                <span class="link link-btn" onclick="logout()">Logout</span>
+
+            </div>
+        </div>
+    </header>
+
+
+
+    <div class="container">
+        <div class="heading">
+            <h3>Create Products</h3>
+        </div>
+        <form id="createProductForm">
+            <div class="items">
+                <div class="item item-1">
+                    <div class="row">
+                        <div class="field">
+                            <label>SKU</label>
+                            <input type="text" class="input" name="sku" id="sku" placeholder="Enter product SKU"
+                                required />
+                        </div>
+                        <div class="field">
+                            <label>Brand</label>
+                            <input type="text" class="input" name="brand" id="brand" placeholder="Enter product BRAND"
+                                required />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Name</label>
+                        <input type="text" class="input" name="name" id="name" placeholder="Enter product name"
+                            required />
+
+                        <input type="text" class="input" name="name" id="name_fr" placeholder="Entrez le nom du produit"
+                            required />
+
+                        <input type="text" class="input" name="name" id="name_ar" placeholder="أدخل اسم المنتج"
+                            required />
+                    </div>
+
+                    <div class="row">
+                        <div class="field">
+
+                            <label>Price</label>
+                            <input type="text" class="input" name="price" id="price" placeholder="Enter price"
+                                required />
+
+                        </div>
+                        <div class="field">
+                            <label for="discount">Discount</label>
+                            <input type="text" class="input" name="discount" id="discount" placeholder="Enter discount"
+                                required />
+                        </div>
+
+
+                        <div class="field">
+                            <label>Stock</label>
+                            <input type="text" class="input" name="stock" id="stock" placeholder="Enter stock"
+                                required />
+                        </div>
+
+                        <div class="field">
+                            <label>Sold</label>
+                            <input type="text" class="input" name="sold" id="sold" placeholder="Enter Sold" required />
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="field">
+                            <label>Category</label>
+                            <input type="text" class="input" name="category" id="category" placeholder="Enter category"
+                                required />
+                        </div>
+
+                        <div class="field">
+
+                            <label>Size</label>
+                            <input type="text" class="input" name="size" id="size" placeholder="Enter size" />
+
+                        </div>
+
+                        <div class="field">
+                            <label>Fit</label>
+                            <input type="text" class="input" name="fit" id="fit" placeholder="Enter fit" />
+                        </div>
+
+                        <div class="field">
+                            <label>Dimension</label>
+                            <input type="text" class="input" name="dimension" id="dimension"
+                                placeholder="Enter dimension" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Material</label>
+                            <input type="text" class="input" name="material" id="material"
+                                placeholder="Enter material" />
+                        </div>
+
+
+                        <div class="field">
+                            <label>Material fr</label>
+                            <input type="text" class="input" name="material_fr" id="material_fr"
+                                placeholder="Enter material" />
+                        </div>
+
+
+                        <div class="field">
+                            <label>Material ar</label>
+                            <input type="text" class="input" name="material_ar" id="material_ar"
+                                placeholder="Enter material" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="field">
+                            <label>Color</label>
+                            <input type="text" class="input" name="color" id="color" placeholder="Enter color"
+                                required />
+                        </div>
+                        <div class="field">
+                            <label>Color fr</label>
+                            <input type="text" class="input" name="color_fr" id="color_fr"
+                                placeholder="Entrez la couleur" required />
+                        </div>
+                        <div class="field">
+                            <label>Color ar</label>
+                            <input type="text" class="input" name="color_ar" id="color_ar" placeholder="أدخل اللون"
+                                required />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="item">
+
+                    <div class="field">
+
+                        <label>Content </label>
+                        <textarea name="content" class="content" id="content" placeholder="Write the product details..."
+                            required onclick="openModal('en')"></textarea>
+                        <textarea name="content_fr" class="content" id="content_fr"
+                            placeholder="Écrivez les détails du produit..." required
+                            onclick="openModal('fr')"></textarea>
+                        <textarea name="content_ar" class="content" id="content_ar" placeholder="اكتب تفاصيل المنتج..."
+                            required onclick="openModal('ar')"></textarea>
+                    </div>
+
+                    <div class="field">
+
+                        <label>Video & Media</label>
+                        <input type="text" class="input" name="video" id="video" placeholder="Enter video" />
+
+                    </div>
+
+                    <div class="row">
+                        <div class="upload-box active">
+                            <label for="image">Main Photo</label>
+                            <input type="file" name="image" id="image" accept="image/*" />
+                            <div class="preview-wrap" id="previewWrap">
+                                <img id="previewImg" alt="Preview" />
+                            </div>
+                            <div class="output" id="output"></div>
+                        </div>
+
+                        <div class="upload-grid">
+                            <!-- Repeatable upload boxes -->
+
+                            <div class="upload-box">
+                                <label for="image1">Select 1</label>
+                                <input type="file" id="image1" accept="image/*" />
+                                <div class="preview-wrap" id="previewWrap1">
+                                    <img id="previewImg1" alt="Preview 2" />
+                                </div>
+                                <div class="output" id="output1"></div>
+                            </div>
+
+                            <div class="upload-box">
+                                <label for="image2">Select 2</label>
+                                <input type="file" id="image2" accept="image/*" />
+                                <div class="preview-wrap" id="previewWrap2">
+                                    <img id="previewImg2" alt="Preview 3" />
+                                </div>
+                                <div class="output" id="output2"></div>
+                            </div>
+
+                            <div class="upload-box">
+                                <label for="image3">Select 3</label>
+                                <input type="file" id="image3" accept="image/*" />
+                                <div class="preview-wrap" id="previewWrap3">
+                                    <img id="previewImg3" alt="Preview 4" />
+                                </div>
+                                <div class="output" id="output3"></div>
+                            </div>
+
+                            <div class="upload-box">
+                                <label for="image4">Select 4</label>
+                                <input type="file" id="image4" accept="image/*" />
+                                <div class="preview-wrap" id="previewWrap4">
+                                    <img id="previewImg4" alt="Preview 5" />
+                                </div>
+                                <div class="output" id="output4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div style="display:flex; gap:8px; align-items:center; padding: 0rem 1rem; padding-bottom: 0.5rem;">
+                <button id="submitBtn" class="button btn-action" type="submit">Create Product</button>
+                <div id="loading" style="display:none">⏳ uploading…</div>
+            </div>
+            <div id="output"></div>
+            <div id="message"></div>
+        </form>
+
+
+
+
+        <div class="modal" id="content_modal">
+            <div class="modal-content">
+
+                <div class="modal-heading">
+                    <h1 class="title">Content <span id="lang_content"></span></h1>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <textarea name="" id="content_text" class="content_text" rows="30"></textarea>
+                        <div class="modal_result">
+                            <span id="length"></span>
+                            <div id="content_desc" class="content_desc"></div>
+                            <div class="content_result" id="content_result"></div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer buttons">
+
+                    <div class="button btn-cancel" id="cancel" onclick="closeModal()">cancel</div>
+                    <div class="button btn-action" id="update" onclick="UpdateContent()">update</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+        const totalImages = 5;
+
+        for (let i = 1; i < totalImages; i++) {
+            const input = document.getElementById(`image${i}`);
+            const previewWrap = document.getElementById(`previewWrap${i}`);
+            const previewImg = document.getElementById(`previewImg${i}`);
+            const output = document.getElementById(`output${i}`);
+
+            input.addEventListener("change", () => {
+                const file = input.files[0];
+                if (!file) {
+                    previewWrap.style.display = "none";
+                    previewImg.src = "";
+                    output.textContent = "";
+                    return;
+                }
+
+                // Show image preview
+                previewWrap.style.display = "flex";
+                previewImg.src = URL.createObjectURL(file);
+
+                // Convert to base64
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64String = reader.result;
+                    output.textContent = base64String; // short preview
+                    output.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+    <script>
+
+        (function () {
+            const form = document.getElementById('createProductForm');
+            const imageInput = document.getElementById('image');
+            const imageInput_1 = document.getElementById('image_1');
+            const imageInput_2 = document.getElementById('image_2');
+            const imageInput_3 = document.getElementById('image_3');
+            const imageInput_4 = document.getElementById('image_4');
+
+            const previewWrap = document.getElementById('previewWrap');
+            const previewImg = document.getElementById('previewImg');
+
+
+            const message = document.getElementById('message');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+
+            const output = document.getElementById('output');
+
+            const output1 = document.getElementById('output1');
+            const output2 = document.getElementById('output2');
+            const output3 = document.getElementById('output3');
+            const output4 = document.getElementById('output4');
+
+
+            imageInput.addEventListener('change', async () => {
+                const file = imageInput.files[0];
+
+                if (!file) {
+                    previewImg.src = '';
+                    previewWrap.style.display = 'none';
+
+                    return;
+                }
+                previewWrap.style.display = 'flex';
+                previewImg.src = URL.createObjectURL(file);
+
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64String = reader.result; // This is your Base64 string
+                    output.textContent = base64String;   // Display it
+                    console.log(base64String);           // Or use it anywhere
+                };
+
+                reader.readAsDataURL(file);
+
+            });
+
+
+            // Submit handler: build FormData and POST multipart/form-data
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    // Base product data
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = "0.5"; // تغيير المظهر ليوحي بالتعطيل
+                    submitBtn.style.cursor = "not-allowed";
+
+                    loading.style.display = "inline-block";
+                    showMessage("⏳ Please wait 1 minute before processing...", "info");
+
+                    let responseMessage = ''
+
+                    function getValue(name) {
+                        return document.getElementById(name).value;
+
+                    }
+                    function getOutput(name) {
+                        return document.getElementById(name).textContent;
+                    }
+
+                    // --- إضافة دالة الانتظار هنا ---
+                    await new Promise(resolve => setTimeout(resolve, 20000)); // 60000ms = 1 minute
+                    // -----------------------------
+
+
+                    const baseData = {
+                        sku: getValue("sku"),
+                        brand: getValue("brand"),
+                        name: getValue("name"),
+                        price: getValue("price"),
+                        discount: getValue("discount"),
+                        stock: getValue("stock"),
+                        sold: getValue("sold"),
+                        content: getValue("content"),
+                        size: getValue("size"),
+                        fit: getValue("fit"),
+                        dimension: getValue("dimension"),
+                        material: getValue("material"),
+                        video: getValue("video"),
+                        color: getValue("color"),
+                        category: getValue("category"),
+                        image: getOutput("output"),
+                    };
+
+                    const response = await fetch("/api/products", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(baseData),
+                    });
+
+                    const data = await response.json();
+                    const id_product = data?.id_product || "";
+                    const slug = data?.slug || "";
+
+                    console.log(
+                        'insertID ', id_product, ' insertSlug', slug
+                    )
+
+                    await Promise.all([
+
+                        fetch("/api/products/images", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                image_1: getOutput("output1"),
+                                image_2: getOutput("output2"),
+                                image_3: getOutput("output3"),
+                                image_4: getOutput("output4"),
+                                id_product,
+                                slug
+
+                            }),
+                        }),
+                        fetch("/api/products/fr", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                name_fr: getValue("name_fr"),
+                                content_fr: getValue("content_fr"),
+                                color_fr: getValue("color_fr"),
+                                material_fr: getValue("material_fr"),
+                                id_product
+
+                            }),
+                        }),
+                        fetch("/api/products/ar", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                name_ar: getValue("name_ar"),
+                                content_ar: getValue("content_ar"),
+                                color_ar: getValue("color_ar"),
+                                material_ar: getValue("material_ar"),
+                                id_product
+
+                            }),
+                        }),
+                    ]);
+
+                    showMessage(`✅ Product created successfully. ID: ${id_product}`, "success");
+                } catch (err) {
+                    showMessage(`❌ Network error: ${err.message}`, "error");
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = "1";
+                    submitBtn.style.cursor = "allow";
+                } finally {
+                    loading.style.display = "none";
+                }
+
+
+
+                function showMessage(text, type) {
+                    message.innerHTML = `<div class="msg ${type}">${escapeHtml(text)}</div>`;
+                }
+
+            });
+
+            function showMessage(text, type) {
+                message.innerHTML = '<div class="msg ' + (type === 'success' ? 'success' : 'error') + '">' + escapeHtml(text) + '</div>';
+            }
+            function clearMessage() { message.innerHTML = ''; }
+            function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+        })();
+    </script>
+
+    <script>
+        function fetchData() {
+            console.log('new product...')
+        }
+
+        const content_text = document.getElementById('content_text')
+        const content_result = document.getElementById('content_result')
+        const content_desc = document.getElementById('content_desc')
+        function openModal(lang) {
+            document.getElementById('lang_content').textContent = lang
+
+            document.getElementById('content_modal').classList.add('active');
+            content_result.innerHTML = "<p class='desc'>desc</p>";
+
+        }
+        function UpdateContent() {
+            console.log(document.getElementById('lang_content').textContent)
+            let lang = document.getElementById('lang_content').textContent
+            if (lang == 'en') {
+                document.getElementById('content').value = content_result.innerHTML
+                closeModal()
+            }
+            if (lang == 'fr') {
+                document.getElementById('content_fr').value = content_result.innerHTML
+                closeModal()
+            }
+            if (lang == 'ar') {
+                document.getElementById('content_ar').value = content_result.innerHTML
+                closeModal()
+            }
+        }
+        function closeModal() {
+            document.getElementById('content_modal').classList.remove('active');
+        }
+
+
+        content_text.addEventListener('click', (e) => {
+
+            try {
+                content_result.innerHTML = e.target.value;
+                const descElement = content_result.querySelector('.desc');
+                content_desc.textContent = descElement.textContent;
+                document.getElementById('length').textContent = content_desc.textContent.length;
+                console.log(content_desc.textContent.length)
+                if (content_desc.textContent.length > 130 && content_desc.textContent.length < 150) {
+                    content_desc.classList.add('active')
+                } else {
+                    content_desc.classList.remove('active')
+                }
+            } catch (error) {
+                console.log('eror:', error)
+            }
+
+        })
+
+
+
+    </script>
+</body>
+
+</html>

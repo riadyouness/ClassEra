@@ -142,62 +142,6 @@ exports.getCategoriesProduct_ar = (req, res) => {
   });
 };
 
-/* ===================== READ ONE (BY SLUG) ===================== */
-exports.getCategorieBySlug1 = (req, res) => {
-  const sql = `
-  
-  SELECT 
-  c.id_category,
-  c.slug as category_slug,
-  c.name as category,
-  c.content,
-  c.image AS category_image,
-  c.date_category,
-  p.id AS id,
-  p.name AS name,
-  p.slug AS slug,
-  p.price,
-  p.discount,
-  p.size,
-  p.color,
-  p.sold,
-  p.stock,
-  p.image AS image
-FROM categories c
-LEFT JOIN products p
-  ON p.category = c.id_category
-WHERE c.slug = ?;
-  
-  `;
-
-  db.query(sql, [req.params.slug], (err, results) => {
-    if (err) return res.status(500).json(err);
-    if (results.length === 0) return res.status(404).json({ message: 'Not found' });
-
-    const category_name = results[0].category;
-    const category_content = results[0].content;
-    const category_image = results[0].category_image;
-
-    res.json({
-      products: results.map(r => ({
-        id: r.id,
-        name: r.name,
-        slug: r.slug,
-        price: r.price,
-        discount: r.discount,
-        size: r.size,
-        color: r.color,
-        image: r.image,
-        sold: r.sold,
-        stock: r.stock
-      })),
-      name: category_name,
-      content: category_content,
-      image: category_image
-    });
-  });
-
-};
 
 exports.getCategorieBySlug = (req, res) => {
   const sql = `

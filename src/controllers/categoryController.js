@@ -143,7 +143,7 @@ exports.getCategoriesProduct_ar = (req, res) => {
 };
 
 /* ===================== READ ONE (BY SLUG) ===================== */
-exports.getCategorieBySlug = (req, res) => {
+exports.getCategorieBySlug1 = (req, res) => {
   const sql = `
   
   SELECT 
@@ -199,126 +199,221 @@ WHERE c.slug = ?;
 
 };
 
-
-/* ===================== READ ONE (BY SLUG) ===================== */
-exports.getCategorieBySlug_fr = (req, res) => {
+exports.getCategorieBySlug = (req, res) => {
   const sql = `
-  SELECT 
-  c.id_category,
-  c.slug AS category_slug,
-  c.name_fr AS category,
-  c.content_fr AS content,
-  c.image AS category_image,
-  c.date_category,
-  p.id AS id,
-  p.name AS name,
-  p_fr.name_fr AS name_fr,
-  p.slug AS slug,
-  p.price,
-  p.discount,
-  p.size,
-  p_fr.color_fr AS color,
-  p.sold,
-  p.stock,
-  p.image AS image
-FROM categories c
-LEFT JOIN products p
-  ON p.category = c.id_category
-LEFT JOIN product_fr p_fr
-  ON p_fr.id_product = p.id
-WHERE c.slug = ?;
-  
+    SELECT 
+      c.id_category,
+      c.slug as category_slug,
+      c.name as category,
+      c.content as category_description,
+      c.image AS category_banner,
+      p.id AS product_id,
+      p.name AS product_name,
+      p.slug AS product_slug,
+      p.price,
+      p.discount,
+      p.size,
+      p.color,
+      p.image AS product_image,
+      p.stock,
+      post.id AS post_id,
+      post.title AS post_title,
+      post.slug AS post_slug,
+      post.image AS post_image,
+      post.content AS post_content
+    FROM categories c
+    LEFT JOIN products p ON p.category = c.id_category
+    LEFT JOIN posts post ON post.id = c.id_article
+    WHERE c.slug = ?;
   `;
 
   db.query(sql, [req.params.slug], (err, results) => {
     if (err) return res.status(500).json(err);
     if (results.length === 0) return res.status(404).json({ message: 'Not found' });
 
-    const category_name = results[0].category;
-    const category_content = results[0].content;
-    const category_image = results[0].category_image;
+    // استخراج بيانات الفئة والمقال من أول صف (لأنها تتكرر في نتائج الـ Join)
+    const categoryData = {
+      name: results[0].category,
+      description: results[0].category_description,
+      image: results[0].category_banner,
+      article: {
+        title: results[0].post_title,
+        image: results[0].post_image,
+        content: results[0].post_content,
+        slug: results[0].post_slug
 
-    res.json({
-      products: results.map(r => ({
-        id: r.id,
-        name: r.name,
-        name_fr: r.name_fr,
-        slug: r.slug,
+      }
+    };
+
+    // تجميع المنتجات في مصفوفة فريدة
+    const products = results
+      .filter(r => r.product_id !== null) // لتجنب إضافة منتجات فارغة إذا كانت الفئة لا تملك منتجات
+      .map(r => ({
+        id: r.product_id,
+        name: r.product_name,
+        slug: r.product_slug,
         price: r.price,
         discount: r.discount,
         size: r.size,
         color: r.color,
-        image: r.image,
-        sold: r.sold,
+        image: r.product_image,
         stock: r.stock
-      })),
-      name: category_name,
-      content: category_content,
-      image: category_image
+      }));
+
+    res.json({
+      ...categoryData,
+      products: products
     });
   });
+};
 
+
+/* ===================== READ ONE (BY SLUG) ===================== */
+/* ===================== READ ONE (BY SLUG) - FRENCH VERSION WITH POST ===================== */
+exports.getCategorieBySlug_fr = (req, res) => {
+  const sql = `
+    SELECT 
+      c.id_category,
+      c.slug AS category_slug,
+      c.name_fr AS category_name,
+      c.content_fr AS category_description,
+      c.image AS category_banner,
+      -- بيانات المنتج المترجمة
+      p.id AS product_id,
+      p_fr.name_fr AS product_name,
+      p.slug AS product_slug,
+      p.price,
+      p.discount,
+      p.size,
+      p_fr.color_fr AS product_color,
+      p.image AS product_image,
+      p.stock,
+      -- بيانات المقال (Post) المرتبط بالفئة
+      post.id AS post_id,
+      post.title_fr AS post_title,
+      post.slug AS post_slug,
+      post.image AS post_image,
+      post.content_fr AS post_content 
+    FROM categories c
+    LEFT JOIN products p ON p.category = c.id_category
+    LEFT JOIN product_fr p_fr ON p_fr.id_product = p.id
+    LEFT JOIN posts post ON post.id = c.id_article
+    WHERE c.slug = ?;
+  `;
+
+  db.query(sql, [req.params.slug], (err, results) => {
+    if (err) return res.status(500).json(err);
+    if (results.length === 0) return res.status(404).json({ message: 'Catégorie non trouvée' });
+
+    // استخراج بيانات الفئة والمقال من الصف الأول
+    const categoryData = {
+      name: results[0].category_name,
+      description: results[0].category_description,
+      image: results[0].category_banner,
+      slug: results[0].category_slug,
+      article: results[0].post_id ? {
+        id: results[0].post_id,
+        title: results[0].post_title,
+        content: results[0].post_content,
+        image: results[0].post_image,
+        slug: results[0].post_slug
+      } : null // إرجاع null إذا لم يكن هناك مقال مرتبط
+    };
+
+    // تجميع المنتجات الفريدة
+    const products = results
+      .filter(r => r.product_id !== null)
+      .map(r => ({
+        id: r.product_id,
+        name: r.product_name,
+        slug: r.product_slug,
+        price: r.price,
+        discount: r.discount,
+        size: r.size,
+        color: r.product_color,
+        image: r.product_image,
+        stock: r.stock
+      }));
+
+    res.json({
+      ...categoryData,
+      products: products
+    });
+  });
 };
 
 /* ===================== READ ONE (BY SLUG) ===================== */
 exports.getCategorieBySlug_ar = (req, res) => {
-  console.log('getCategorieBySlug_ar')
   const sql = `
-  SELECT 
-  c.id_category,
-  c.slug AS category_slug,
-  c.name_ar AS category,
-  c.content_ar AS content,
-  c.image AS category_image,
-  c.date_category,
-  p.id AS id,
-  p.name AS name,
-  p_ar.name_ar AS name_ar,
-  p.slug AS slug,
-  p.price,
-  p.discount,
-  p.size,
-  p_ar.color_ar AS color,
-  p.sold,
-  p.stock,
-  p.image AS image
-FROM categories c
-LEFT JOIN products p
-  ON p.category = c.id_category
-LEFT JOIN product_ar p_ar
-  ON p_ar.id_product = p.id
-WHERE c.slug = ?;
-  
+    SELECT 
+      c.id_category,
+      c.slug AS category_slug,
+      c.name_ar AS category_name,
+      c.content_ar AS category_description,
+      c.image AS category_banner,
+      p.id AS product_id,
+      p_ar.name_ar AS product_name,
+      p.slug AS product_slug,
+      p.price,
+      p.discount,
+      p.size,
+      p_ar.color_ar AS product_color,
+      p.image AS product_image,
+      p.stock,
+      p.sold,
+      post.id AS post_id,
+      post.title_ar AS post_title, 
+      post.slug AS post_slug,
+      post.image AS post_image,
+      post.content_ar AS post_content -- افترضت وجود content_ar في جدول posts
+    FROM categories c
+    LEFT JOIN products p ON p.category = c.id_category
+    LEFT JOIN product_ar p_ar ON p_ar.id_product = p.id
+    LEFT JOIN posts post ON post.id = c.id_article
+    WHERE c.slug = ?;
   `;
 
   db.query(sql, [req.params.slug], (err, results) => {
     if (err) return res.status(500).json(err);
-    if (results.length === 0) return res.status(404).json({ message: 'Not found' });
+    if (results.length === 0) return res.status(404).json({ message: 'القسم غير موجود' });
 
-    const category_name = results[0].category;
-    const category_content = results[0].content;
-    const category_image = results[0].category_image;
+    // استخراج بيانات الفئة والمقال من الصف الأول
+    const categoryData = {
+      name: results[0].category_name,
+      description: results[0].category_description,
+      image: results[0].category_banner,
+      slug: results[0].category_slug,
+      // كائن المقال المرتبط
+      article: results[0].post_id ? {
+        id: results[0].post_id,
+        title: results[0].post_title,
+        content: results[0].post_content,
+        image: results[0].post_image,
+        slug: results[0].post_slug
+      } : null 
+    };
 
-    res.json({
-      products: results.map(r => ({
-        id: r.id,
-        name: r.name,
-        name_ar: r.name_ar,
-        slug: r.slug,
+    // تجميع مصفوفة المنتجات وتصفية القيم الفارغة
+    const products = results
+      .filter(r => r.product_id !== null)
+      .map(r => ({
+        id: r.product_id,
+        name: r.product_name,
+        slug: r.product_slug,
         price: r.price,
         discount: r.discount,
         size: r.size,
-        color: r.color,
-        image: r.image,
-        sold: r.sold,
-        stock: r.stock
-      })),
-      name: category_name,
-      content: category_content,
-      image: category_image
+        color: r.product_color,
+        image: r.product_image,
+        stock: r.stock,
+        sold: r.sold
+      }));
+
+    res.json({
+      ...categoryData,
+      products: products
     });
   });
-
 };
 
 

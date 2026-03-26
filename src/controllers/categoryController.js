@@ -10,7 +10,7 @@ function generateID() {
 
 /* ===================== READ ALL ===================== */
 exports.getCategories = (req, res) => {
-  const sql = `SELECT id_category, slug, name, name_ar, name_fr, content, content_ar, content_fr, image ,date_category FROM categories ORDER BY date_category DESC`;
+  const sql = `SELECT id_category,id_article, slug, name, name_ar, name_fr, content, content_ar, content_fr, image ,date_category FROM categories ORDER BY date_category DESC`;
 
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json(err);
@@ -574,6 +574,7 @@ exports.getCategorieByProductSlug_ar = (req, res) => {
 /* ===================== Insert ONE  ===================== */
 exports.createPostCategorie = (req, res) => {
   const {
+    id_article,
     name, slug,
     name_ar, name_fr,
     content, content_ar, content_fr,
@@ -595,13 +596,13 @@ exports.createPostCategorie = (req, res) => {
     let path_image = "/images/categories/" + filename
     const sql = `
     INSERT INTO categories
-    (name, slug, name_ar, name_fr, content, content_ar, content_fr, image)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (id_article, name, slug, name_ar, name_fr, content, content_ar, content_fr, image)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
     db.query(
       sql,
-      [name, slug, name_ar, name_fr, content, content_ar, content_fr, path_image],
+      [id_article, name, slug, name_ar, name_fr, content, content_ar, content_fr, path_image],
       (err, results) => {
         if (err) return res.status(500).json(err);
         res.json({ message: 'Category created', id: results.insertId });
@@ -622,6 +623,7 @@ exports.UpdateCategorie = (req, res) => {
   const {
     name,
     slug,
+    id_article,
     name_ar,
     name_fr,
     content,
@@ -630,6 +632,9 @@ exports.UpdateCategorie = (req, res) => {
     image,
     image_path
   } = req.body;
+  console.log( 'id_article',
+    id_article)
+
   let finalname = image_path
   if (!image_path) {
     finalname = '/images/categories/' + slug + generateID() + '.webp';
@@ -651,7 +656,7 @@ exports.UpdateCategorie = (req, res) => {
 
   const sql = `
       UPDATE categories 
-      SET name = ?, slug = ?, name_ar = ?, name_fr = ?,
+      SET id_article = ?, name = ?, slug = ?, name_ar = ?, name_fr = ?,
           content = ?, content_ar = ?, content_fr = ?, image = ?
       WHERE id_category = ?
     `;
@@ -659,6 +664,7 @@ exports.UpdateCategorie = (req, res) => {
   db.query(
     sql,
     [
+      id_article,
       name,
       slug,
       name_ar,

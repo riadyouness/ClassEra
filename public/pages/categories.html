@@ -51,6 +51,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Post Relative</th>
                     <th>Name</th>
                     <th>Slug</th>
                     <th>Image</th>
@@ -69,6 +70,12 @@
             </div>
             <form id="categoryForm" enctype="multipart/form-data">
                 <input type="hidden" id="category_id" />
+                <div class="row">
+                    <div class="field">
+                        <label>Post ID:</label>
+                        <input type="text" id="id_article" placeholder="Post related with Category" required />
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="field">
@@ -140,6 +147,8 @@
         const API_URL = "/api/categories";
         const form = document.getElementById("categoryForm");
         const idInput = document.getElementById("category_id");
+        const id_article = document.getElementById("id_article");
+
         const name_en = document.getElementById("name");
         const name_ar = document.getElementById("name_ar");
         const name_fr = document.getElementById("name_fr");
@@ -165,6 +174,7 @@
                         category = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
                     }
                     document.getElementById("modalTitle").innerText = "Edit Category";
+                    id_article.value= category.id_article
                     name_en.value = category.name
                     name_fr.value = category.name_fr
                     name_ar.value = category.name_ar
@@ -205,6 +215,7 @@
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
                         <td>${cat.id_category}</td>
+                        <td>${cat.id_article}</td>
                         <td>${cat.name}</td>
                         <td><code>${cat.slug}</code></td>
                         <td>
@@ -269,6 +280,7 @@
 
 
             const baseData = {
+                id_article: id_article.value,
                 name: name_en.value,
                 slug,
                 name_fr: name_fr.value,

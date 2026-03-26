@@ -13,8 +13,6 @@ h1 {
 
 form {
     width: 100%;
-    background: #fafafa;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     padding: 0rem 1rem;
 }
 
@@ -329,6 +327,14 @@ button:disabled {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+
+}
+
+.modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
 .modal-content {
@@ -338,7 +344,9 @@ button:disabled {
     padding-top: 0;
     border-radius: 8px;
     width: 100%;
+    height: 80vh;
     max-width: 80vw;
+    margin: 10vh auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     min-height: 50vh;
 }
@@ -363,16 +371,14 @@ button:disabled {
 .modal-header {
     position: relative;
     border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    height: 60px;
+    padding: 2rem;
     overflow: hidden;
-    min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
+    text-transform: uppercase;
 }
 
 .modal-body {
@@ -415,6 +421,10 @@ button:disabled {
 .modal-footer {
     margin-top: 20px;
     text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+    padding: 0.5rem 0rem;
 }
 
 .modal-buttons {
@@ -522,9 +532,10 @@ button:disabled {
     background-color: #cde2bb;
 }
 
-.modal_result{
+.modal_result {
     position: relative;
 }
+
 .modal_result #length {
     position: absolute;
     top: 0;
